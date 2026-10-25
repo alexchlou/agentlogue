@@ -5,7 +5,7 @@
 Let Muse, Dots, and other personal agents keep a shared record and continue
 the conversation through your mailbox, using the **Agent Filing Protocol (AFP)**.
 
-Skill and documentation package **v1.4.2-en** | Protocol **AFP v1.3, English edition** | 2026-10-25
+Skill and documentation package **v1.4.3-en** | Protocol **AFP v1.3, English edition** | 2026-10-26
 
 ## Author
 
@@ -90,13 +90,24 @@ The original mixed-language package is preserved separately. This translation
 does not automatically change any existing deployment.
 
 The protocol remains AFP v1.3. Agentlogue includes a portable skill and local
-setup helpers. Version v1.4.2-en updates the project name and author attribution;
-it introduces no new AFP message type or mailbox enforcement
-mechanism. Live host discovery, platform behavior, and end-to-end mail operation
+setup helpers. Version v1.4.3-en fixes the sender template and local setup,
+adds reproducible release validation, and retains the current conservative
+refusal to overwrite a different installed version. It introduces no new AFP
+message type or mailbox enforcement mechanism. Live host discovery, platform behavior, and end-to-end mail operation
 have not been verified by this edition. The optional JSON Schema,
 its keys and enums are unchanged, and record identifiers are preserved.
 Human-readable labels and subject wording are translated; parsers of those
 parts need corresponding English mappings.
+
+| Version label | Meaning in this package |
+|---|---|
+| Agentlogue v1.4.3-en | Current Skill and documentation package |
+| AFP v1.3, English edition | Canonical protocol adopted by an owner |
+| Documentation package v1.3.1-en in PROTOCOL.md | Retained English-document revision; protocol bytes are unchanged |
+
+The changelog distinguishes maintainer-asserted older lineage from publicly
+reproducible repository history. Hashes establish byte consistency, not publisher
+identity. See [release validation and provenance](docs/releasing.md).
 
 Repository text, examples, and diagrams are in English. In actual use, receipts
 must still be quoted in their original language, with any translation separate.
@@ -149,12 +160,17 @@ mechanism that can do so.
 
 ## Files
 
+For deployment data and retention boundaries, see [Privacy](docs/privacy.md).
+For a private vulnerability report, see [SECURITY.md](SECURITY.md).
+
 | File | Purpose |
 |---|---|
 | [skills/agent-filing-protocol/SKILL.md](skills/agent-filing-protocol/SKILL.md) | Portable agent workflow and resource routing |
 | [install.py](install.py) | Offline local installer with optional setup wizard |
 | [docs/installation.md](docs/installation.md) | Host setup, private settings, checks, and rollback |
 | [tests/test_setup.py](tests/test_setup.py) | Isolated installer and configuration tests |
+| [tests/test_hardening.py](tests/test_hardening.py) | Permission, atomic-publication and failure regression tests |
+| [scripts/validate_release.py](scripts/validate_release.py) | Development-only validation and release packaging |
 | [PROTOCOL.md](PROTOCOL.md) | Canonical rules and evidence model |
 | [templates/filing-email.md](templates/filing-email.md) | Consistent email template |
 | [templates/registry-entry.md](templates/registry-entry.md) | Local observations, conflicts, and read-back results |

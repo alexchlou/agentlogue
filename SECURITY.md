@@ -1,5 +1,20 @@
 # Security Model and Known Limitations
 
+## Reporting a vulnerability
+
+Use the repository's private vulnerability-reporting form:
+[Report a vulnerability](https://github.com/alexchlou/agentlogue/security/advisories/new).
+Do not post credentials, private settings, mailbox exports or integration
+records in a public issue. Include the affected version, a synthetic reproducer,
+impact and any relevant redacted output. A report is not permission to access
+another person's mailbox or test outside an authorized environment.
+
+The maintainer has not promised a response deadline. If the private form is
+unavailable, open only a non-sensitive request for a private contact route;
+withhold the vulnerability details until a usable route is established.
+
+## Protocol security model
+
 AFP v1.3 — documentation controls, not a deployed enforcement mechanism.
 Canonical requirements are in PROTOCOL.md. This document does not establish
 that any particular runtime implements them.

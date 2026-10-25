@@ -16,7 +16,7 @@ The complete message displayed and approved in the fictional trusted channel
 is below. Showing it here is not actual approval.
 
 ```text
-From: <LEDGER_EMAIL>
+From: <SENDING_ACCOUNT>
 To: <LEDGER_EMAIL>
 Cc: None
 Bcc: None

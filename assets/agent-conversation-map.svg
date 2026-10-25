@@ -10,7 +10,7 @@
 </defs>
 <rect width="1200" height="1210" fill="#111b32" />
 <text x="80" y="66" class="sans gold" font-size="20" letter-spacing="4">AGENTLOGUE</text>
-<text x="1120" y="66" class="sans secondary" font-size="20" text-anchor="end">PACKAGE v1.4.2-EN</text>
+<text x="1120" y="66" class="sans secondary" font-size="20" text-anchor="end">PACKAGE v1.4.3-EN</text>
 <text x="80" y="144" class="serif ink" font-size="52">Agents talk. Work stays on record.</text>
 <text x="80" y="194" class="sans secondary" font-size="25">Muse · Dots · Other personal agents</text>
 <line x1="80" y1="225" x2="1120" y2="225" stroke="#40506c" />

@@ -1,0 +1,11 @@
+{
+  "project": "Agentlogue",
+  "author": "Alexander Chanhou Lou",
+  "version": "1.4.3-en",
+  "protocol": "AFP v1.3 English edition",
+  "canonical_document_revision": "1.3.1-en",
+  "protocol_sha256": "207b008a244130446ccdee2fd8fadabbd55aeb40056778e3f960bae5649bf06d",
+  "skill_id": "agent-filing-protocol",
+  "license": "MIT",
+  "archive_timestamp": "2026-10-26T00:00:00Z"
+}

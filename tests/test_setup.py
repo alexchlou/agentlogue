@@ -58,16 +58,16 @@ class SetupTests(unittest.TestCase):
     def run_installer(self, *args):
         return subprocess.run([sys.executable, str(ROOT / "install.py"), "--target", "portable",
                                "--destination", str(self.dest), *args], cwd=str(self.area),
-                              capture_output=True, text=True, timeout=15)
+                              stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=15)
 
     def install(self, *args):
         result = self.run_installer(*args)
         self.assertEqual(result.returncode, 0, result.stderr)
         return json.loads(result.stdout)
 
-    def helper(self, *args):
+    def helper(self, *args, input=None):
         return subprocess.run([sys.executable, str(self.dest / "scripts/afp_setup.py"), *args],
-                              cwd=str(self.area), capture_output=True, text=True, timeout=15)
+                              cwd=str(self.area), input=input, stdin=None if input is not None else subprocess.DEVNULL, capture_output=True, text=True, timeout=15)
 
     def test_dry_run_has_no_filesystem_effect(self):
         before = tree_hashes(self.area)
@@ -257,6 +257,60 @@ class SetupTests(unittest.TestCase):
         self.assertEqual(self.helper("configure", "--config", str(self.config), "--replace").returncode, 1)
         self.assertEqual(self.config.read_bytes(), before)
 
+
+    def test_finder_metadata_does_not_block_install_or_doctor(self):
+        source_copy = self.area / "browsed-source"
+        shutil.copytree(SOURCE, source_copy)
+        (source_copy / ".DS_Store").write_bytes(b"Bud1")
+        (source_copy / "references/._PROTOCOL.md").write_bytes(b"\x00\x05\x16\x07")
+        with mock.patch.object(installer, "SOURCE", source_copy), contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(installer.main(["--destination", str(self.dest)]), 0)
+        self.assertFalse((self.dest / ".DS_Store").exists())
+        self.assertFalse((self.dest / "references/._PROTOCOL.md").exists())
+        (self.dest / ".DS_Store").write_bytes(b"Bud1")
+        (self.dest / "assets/Thumbs.db").write_bytes(b"thumbs")
+        result = self.helper("doctor")
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertEqual(self.install()["action"], "already_installed_unchanged")
+
+    def test_integrity_error_names_the_differing_files(self):
+        self.install()
+        (self.dest / "references/PROTOCOL.md").write_text("Changed protocol")
+        (self.dest / "notes.txt").write_text("Owner note")
+        (self.dest / "references/licensing.md").unlink()
+        result = self.helper("doctor")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("changed: references/PROTOCOL.md", result.stderr)
+        self.assertIn("unexpected: notes.txt", result.stderr)
+        self.assertIn("missing: references/licensing.md", result.stderr)
+
+    def test_agent_shell_saves_settings_from_standard_input(self):
+        self.install()
+        self.assertIn("configure --config -", (SOURCE / "SKILL.md").read_text(encoding="utf-8"))
+        result = self.helper("configure", "--config", "-", "--replace", input=json.dumps(complete_config()))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(setup.load_config(self.dest / "local/config.json"), complete_config())
+        self.assertEqual(self.helper("doctor").returncode, 0)
+
+    def test_configure_refuses_existing_settings_before_prompting(self):
+        self.install()
+        result = self.helper("configure", "--wizard")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("already exists", result.stderr)
+
+    def test_wizard_asks_again_without_losing_earlier_answers(self):
+        answers = ["Example owner", "not-an-email", "ledger@example.invalid", "Muse (Example host)",
+                   "auditor", "preparer", "DEMO-1; DEMO-1", "DEMO-1", "Synthetic demo only",
+                   "Owner chat", "owner chat only", "Muse (Example host)", "30 days"]
+        terminal = mock.Mock()
+        terminal.isatty.return_value = True
+        with mock.patch.object(setup.sys, "stdin", terminal), mock.patch("builtins.input", side_effect=answers), \
+                contextlib.redirect_stdout(io.StringIO()) as output:
+            data = setup.wizard()
+        self.assertEqual((data["owner_name"], data["ledger_email"], data["role"]),
+                         ("Example owner", "ledger@example.invalid", "preparer"))
+        self.assertEqual(data["authorized_matters"], ["DEMO-1"])
+        self.assertIn("use one of: preparer", output.getvalue())
 
 if __name__ == "__main__":
     unittest.main()

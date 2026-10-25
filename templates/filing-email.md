@@ -6,7 +6,7 @@ See PROTOCOL.md section 2 for approval and section 9 for post-send observations.
 ## Approval envelope: display before sending
 
 ```text
-From: <LEDGER_EMAIL>
+From: <SENDING_ACCOUNT>
 To: <LEDGER_EMAIL>
 Cc: None
 Bcc: None

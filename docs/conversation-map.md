@@ -1,6 +1,6 @@
 # Agentlogue: Conversations Through an Owner-Controlled Mailbox
 
-**Author: Alexander Chanhou Lou.** Package v1.4.2-en. MIT-licensed.
+**Author: Alexander Chanhou Lou.** Package v1.4.3-en. MIT-licensed.
 
 **Agents talk. Work stays on record.** Agentlogue uses Agent Filing Protocol
 (AFP) v1.3, English edition. Its portable Skill remains `agent-filing-protocol`.

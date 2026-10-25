@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 """Offline owner-settings helper. No mail, network, OAuth, or platform edits."""
+import sys
+
+if sys.version_info < (3, 9):
+    sys.exit("AFP setup requires Python 3.9 or newer; no settings were changed.")
+
 import argparse
 import datetime
 import hashlib
@@ -7,12 +12,13 @@ import json
 import os
 from pathlib import Path
 import re
-import sys
+import stat
 import tempfile
 import uuid
 
 sys.dont_write_bytecode = True
 SKILL_NAME = "agent-filing-protocol"
+MAX_CONFIG_BYTES = 65536
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 ROLES = ("preparer", "read_only_auditor", "independent_filer", "send_only_participant")
 DEFAULT_CONFIG = {
@@ -24,6 +30,12 @@ DEFAULT_CONFIG = {
     "content_mode": "minimal_reference", "retention_policy": "",
     "mail_provider": "gmail", "readback_location": "", "authorized_reader": "",
 }
+# Inert metadata that Finder, Explorer, or archive tools add when a folder is browsed.
+OS_METADATA_NAMES = (".DS_Store", "Thumbs.db", "desktop.ini")
+
+
+def is_os_metadata(name):
+    return name in OS_METADATA_NAMES or name.startswith("._")
 
 
 def no_duplicates(pairs):
@@ -36,10 +48,18 @@ def no_duplicates(pairs):
 
 
 def load_config(path):
-    path = Path(path).expanduser()
-    if path.stat().st_size > 65536:
+    """Read settings from a file, or from standard input when path is '-'."""
+    if str(path) == "-":
+        stream = getattr(sys.stdin, "buffer", sys.stdin)
+        value = stream.read(MAX_CONFIG_BYTES + 1)
+        raw = value.encode("utf-8") if isinstance(value, str) else value
+    else:
+        path = Path(path).expanduser()
+        with path.open("rb") as stream:
+            raw = stream.read(MAX_CONFIG_BYTES + 1)
+    if len(raw) > MAX_CONFIG_BYTES:
         raise ValueError("Configuration exceeds 64 KiB")
-    data = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=no_duplicates)
+    data = json.loads(raw.decode("utf-8"), object_pairs_hook=no_duplicates)
     validate_config(data)
     return data
 
@@ -56,8 +76,10 @@ def validate_config(data):
                 raise ValueError("Control characters or excessive length in: " + key)
     if data["config_version"] != 1 or data["protocol_version"] != "AFP v1.3" or data["language_edition"] != "en":
         raise ValueError("Unsupported configuration or protocol edition")
-    if data["role"] not in ROLES or data["content_mode"] not in ("minimal_reference", "full_content"):
-        raise ValueError("Unsupported role or content mode")
+    if data["role"] not in ROLES:
+        raise ValueError("Unsupported role; use one of: " + ", ".join(ROLES))
+    if data["content_mode"] not in ("minimal_reference", "full_content"):
+        raise ValueError("Unsupported content mode")
     for key in ("ledger_email", "sending_account"):
         if data[key] and not re.fullmatch(r"[^\s@<>,;]+@[^\s@<>,;]+\.[^\s@<>,;]+", data[key]):
             raise ValueError("Expected one plain email address in: " + key)
@@ -105,13 +127,39 @@ def verify_bundle(root):
         rel = path.relative_to(root)
         if path.is_symlink():
             raise ValueError("Symbolic link in skill: " + rel.as_posix())
-        if rel.parts[0] == "local":
+        if rel.parts[0] == "local" or (path.is_file() and is_os_metadata(path.name)):
             continue
         if path.is_file() and rel.as_posix() != "MANIFEST.json":
             actual[rel.as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
     if actual != expected:
-        raise ValueError("Skill files differ from MANIFEST.json; existing installs are never overwritten")
+        groups = (
+            ("changed", sorted(k for k in actual.keys() & expected.keys() if actual[k] != expected[k])),
+            ("unexpected", sorted(actual.keys() - expected.keys())),
+            ("missing", sorted(expected.keys() - actual.keys())),
+        )
+        details = "; ".join(label + ": " + ", ".join(names[:5]) + (", ..." if len(names) > 5 else "")
+                            for label, names in groups if names)
+        raise ValueError("Skill files differ from MANIFEST.json (" + details + ")")
     return len(actual)
+
+
+def ask(data, key, prompt):
+    """Ask until the answer is valid, so one typo does not discard earlier answers."""
+    while True:
+        value = input(prompt + ": ").strip()
+        if key == "authorized_matters":
+            value = [v.strip() for v in value.split(";") if v.strip()]
+        elif not value:
+            return
+        candidate = dict(data)
+        candidate[key] = value
+        try:
+            validate_config(candidate)
+        except ValueError as exc:
+            print(str(exc) + ". Please enter it again.")
+            continue
+        data[key] = value
+        return
 
 
 def wizard():
@@ -131,41 +179,44 @@ def wizard():
         ("retention_policy", "Retention period and owner-controlled handling"),
     ]
     for key, prompt in prompts:
-        value = input(prompt + ": ").strip()
-        if key == "authorized_matters":
-            data[key] = [v.strip() for v in value.split(";") if v.strip()]
-        elif value:
-            data[key] = value
+        ask(data, key, prompt)
     if data["role"] in ("independent_filer", "send_only_participant"):
         for key, prompt in [("sending_account", "Sending account email"), ("readback_location", "Authorized read-back view")]:
-            data[key] = input(prompt + ": ").strip()
+            ask(data, key, prompt)
     if data["role"] == "send_only_participant":
-        data["authorized_reader"] = input("Authorized reader label: ").strip()
+        ask(data, "authorized_reader", "Authorized reader label")
     validate_config(data)
     print("Defaults: minimal_reference; registry writes require separate authorization.")
     return data
 
 
-def write_config(root, data, replace=False):
-    validate_config(data)
-    local = Path(root) / "local"
-    if local.is_symlink():
-        raise ValueError("Refusing a symbolic-link local directory")
-    local.mkdir(mode=0o700, exist_ok=True)
-    path = local / "config.json"
+def check_private_path(path, directory=False):
+    """Reject unsafe existing settings; doctor never silently changes permissions."""
+    path = Path(path)
     if path.is_symlink():
-        raise ValueError("Refusing a symbolic-link configuration file")
-    if path.exists() and not replace:
-        raise ValueError("Local configuration already exists; use --replace to preserve a backup and change it")
-    payload = (json.dumps(data, indent=2, ensure_ascii=True) + "\n").encode()
-    backup = None
-    if path.exists():
-        stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-        backup = local / ("config.backup-" + stamp + "-" + uuid.uuid4().hex[:8] + ".json")
-        fd = os.open(str(backup), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-        with os.fdopen(fd, "wb") as stream:
-            stream.write(path.read_bytes())
-    fd, temporary = tempfile.mkstemp(prefix=".config-", dir=str(local))
+        raise ValueError("Refusing a symbolic-link private settings path")
+    info = path.stat()
+    if not (stat.S_ISDIR(info.st_mode) if directory else stat.S_ISREG(info.st_mode)):
+        raise ValueError("Private settings path has the wrong file type")
+    if os.name == "posix":
+        required = 0o700 if directory else 0o600
+        if stat.S_IMODE(info.st_mode) != required or info.st_uid != os.getuid():
+            raise ValueError("Private settings require owner-only permissions: local/ 0700, files 0600; review and repair permissions before retrying")
+
+
+def check_local_settings(root):
+    local = Path(root) / "local"
+    if local.exists() or local.is_symlink():
+        check_private_path(local, directory=True)
+    path = local / "config.json"
+    if path.exists() or path.is_symlink():
+        check_private_path(path)
+    return path
+
+
+def publish_private(path, payload, replace=False):
+    """Publish complete bytes. A hard link atomically refuses an existing name."""
+    fd, temporary = tempfile.mkstemp(prefix=".config-", dir=str(path.parent))
     try:
         with os.fdopen(fd, "wb") as stream:
             stream.write(payload)
@@ -174,12 +225,34 @@ def write_config(root, data, replace=False):
         if replace:
             os.replace(temporary, path)
         else:
-            fd = os.open(str(path), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-            with os.fdopen(fd, "wb") as stream:
-                stream.write(payload)
+            try:
+                os.link(temporary, path)
+            except FileExistsError:
+                raise ValueError("Configuration or backup appeared during setup; refusing to overwrite")
+            except OSError as exc:
+                raise OSError("Atomic first creation requires hard-link support on this filesystem; no partial configuration was published") from exc
     finally:
         if os.path.exists(temporary):
             os.unlink(temporary)
+
+
+def write_config(root, data, replace=False):
+    validate_config(data)
+    payload = (json.dumps(data, indent=2, ensure_ascii=True) + "\n").encode()
+    if len(payload) > MAX_CONFIG_BYTES:
+        raise ValueError("Configuration exceeds 64 KiB")
+    path = check_local_settings(root)
+    local = path.parent
+    if path.exists() and not replace:
+        raise ValueError("Local configuration already exists; use --replace to preserve a backup and change it")
+    local.mkdir(mode=0o700, exist_ok=True)
+    check_private_path(local, directory=True)
+    backup = None
+    if path.exists():
+        stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        backup = local / ("config.backup-" + stamp + "-" + uuid.uuid4().hex[:8] + ".json")
+        publish_private(backup, path.read_bytes())
+    publish_private(path, payload, replace=replace)
     return backup
 
 
@@ -189,20 +262,22 @@ def main():
     sub.add_parser("doctor", help="Read-only local integrity and configuration checks")
     configure = sub.add_parser("configure", help="Write local owner settings only")
     group = configure.add_mutually_exclusive_group(required=True)
-    group.add_argument("--config", type=Path)
-    group.add_argument("--wizard", action="store_true")
+    group.add_argument("--config", type=Path, help="Settings JSON file, or '-' to read it from standard input")
+    group.add_argument("--wizard", action="store_true", help="Prompt in a terminal")
     configure.add_argument("--replace", action="store_true", help="Preserve the existing config in a private backup")
     args = parser.parse_args()
     try:
         count = verify_bundle(SKILL_ROOT)
+        path = check_local_settings(SKILL_ROOT)
         if args.command == "doctor":
-            path = SKILL_ROOT / "local/config.json"
             data = load_config(path) if path.exists() else dict(DEFAULT_CONFIG)
             report = settings_report(data)
             report["bundle_files_verified"] = count
             report["config_present"] = path.exists()
             print(json.dumps(report, indent=2))
             return 0 if report["configuration_state"] == "locally_complete" else 2
+        if path.exists() and not args.replace:
+            raise ValueError("Local configuration already exists; use --replace to preserve a backup and change it")
         data = wizard() if args.wizard else load_config(args.config)
         backup = write_config(SKILL_ROOT, data, replace=args.replace)
         report = settings_report(data)

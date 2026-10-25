@@ -1,0 +1,3 @@
+# Keep byte-pinned protocol resources and manifests stable on every checkout.
+* text=auto eol=lf
+*.png binary

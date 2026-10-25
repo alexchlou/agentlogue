@@ -1,5 +1,36 @@
 # Changelog
 
+## v1.4.3-en - 2026-10-26
+
+- Preserve LF text bytes on Git checkouts, including Windows, so automatic
+  newline conversion cannot invalidate the pinned protocol and Skill manifest.
+- Order manifest and archive paths consistently across operating systems.
+- Correct From to the selected sending account in both templates and worked
+  examples. The ledger remains the destination; final-message approval remains
+  required. Regenerate canonical resource copies and the Skill manifest.
+- Tolerate documented OS metadata in package integrity checks, retain symlink
+  and pycache rejection, and identify changed/unexpected/missing files.
+- Support bounded UTF-8 stdin configuration, perform prerequisites before
+  prompting, and retry invalid wizard fields without losing earlier answers.
+- Publish complete first-time settings without overwriting a concurrent creator;
+  preserve complete replacement backups; reject unsafe existing POSIX settings
+  permissions/ownership; check the minimum Python version before setup.
+- Add public manifest generation, isolated fault-injection tests, release
+  validation/packaging and CI configuration. Add privacy/provenance explanations
+  and a private vulnerability-reporting route. Actual CI execution and native
+  host operation must be reported separately from local checks.
+- Keep automatic in-place upgrade out of this maintenance release. Different
+  installed versions remain refused pending a separately reviewed migration.
+- Update package-version labels and the diagram's label in the existing visual
+  design. Preserve AFP v1.3 English PROTOCOL.md, schemas, MIT notices and the
+  Skill identifier. SECURITY.md gains reporting guidance; templates and setup
+  helpers intentionally change. Previous version artifacts remain separate.
+
+Older entries below describe the maintainer's retained source lineage. This
+repository's public history starts at v1.4.2-en; the older byte-preservation
+statements cannot be independently reconstructed from that initial root commit.
+Future commits do not retroactively fill those missing public baselines.
+
 ## v1.4.2-en - 2026-10-25
 
 - Adopt **Agentlogue** as the project name and **Agents talk. Work stays on

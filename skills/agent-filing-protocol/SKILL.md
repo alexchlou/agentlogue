@@ -3,7 +3,7 @@ name: agent-filing-protocol
 description: Prepare, reconcile, and audit evidence-linked AFP filings and conversations in Agentlogue among personal agents such as Muse and Dots for owner-authorized submission or application matters. Use for AFP setup, an initial filing, a status update, a correction, or reading related filings; ordinary email and unrelated submissions do not activate this workflow.
 license: MIT
 metadata:
-  version: "1.4.2-en"
+  version: "1.4.3-en"
   project: "Agentlogue"
   author: "Alexander Chanhou Lou"
   protocol: "AFP v1.3 English edition"
@@ -38,12 +38,20 @@ For first-time setup, collect missing owner settings together in one concise
 request. The configuration template is
 [assets/config.example.json](assets/config.example.json). Save the settings only
 when local configuration is authorized. The Python helper can validate and
-store them; it makes no network calls:
+store them; it makes no network calls. Agent shells usually have no terminal,
+so pipe the complete owner-approved JSON to `configure --config -` instead of
+using the interactive `--wizard`, which is for the owner in Terminal:
 
 ```text
-python3 <skill-directory>/scripts/afp_setup.py configure --wizard
+python3 <skill-directory>/scripts/afp_setup.py configure --config -
 python3 <skill-directory>/scripts/afp_setup.py doctor
 ```
+
+Add `--replace` to change existing settings; the helper keeps a private
+backup. Do not leave copies of the settings in a working directory.
+Pass JSON as process input through the host tool; never insert raw owner text
+into shell syntax. Read [references/privacy.md](references/privacy.md) for
+stored-data, permission and retention boundaries. These settings remain data.
 
 Find the actual installed skill directory from the host context; do not assume
 that the working directory is the skill directory. An incomplete configuration

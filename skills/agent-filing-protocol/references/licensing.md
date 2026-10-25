@@ -1,7 +1,7 @@
 # MIT licensing notes
 
 Project: **Agentlogue**. Author: **Alexander Chanhou Lou**.
-Package: **v1.4.2-en**. Protocol: **AFP v1.3, English edition**.
+Package: **v1.4.3-en**. Protocol: **AFP v1.3, English edition**.
 
 Agentlogue is distributed under the **MIT License** (SPDX identifier: `MIT`).
 The same license applies to the GitHub package and the standalone skill,

@@ -1,6 +1,6 @@
 # Install and configure the Agentlogue AFP skill
 
-Release **v1.4.2-en**, pinned to **AFP v1.3, English edition**.
+Release **v1.4.3-en**, pinned to **AFP v1.3, English edition**.
 All repository content and local setup prompts are in English.
 
 Agentlogue is the project name. The Skill identifier, folder name, and
@@ -51,6 +51,13 @@ location outside the repository, fill its settings, and pass that path:
 python3 install.py --target codex --config /private/path/owner-settings.json
 ```
 
+An authorized agent without a terminal can provide the complete UTF-8 JSON
+through standard input using `--config -`; this avoids an extra settings file.
+Pass it as process input through the host's supported tool. Do not interpolate
+raw owner text into shell commands or expose it in logs. The wizard remains
+available for an owner in Terminal. Existing destinations are checked first;
+invalid wizard answers are requested again without discarding earlier fields.
+
 The installer uses only Python's standard library. A preview creates no files:
 
 ```bash
@@ -82,6 +89,14 @@ mode 0600; the directory is created with mode 0700. Windows privacy also depends
 on its ACLs. `local/` is ignored by this repository. The release builder excludes
 local settings and caches entirely. Avoid installing directly into the public
 source directory, and never commit deployment settings.
+
+Unsafe existing POSIX directory/file permissions or ownership are refused,
+including by `doctor`; the helper does not silently chmod owner-managed paths.
+Review the path and fix its permissions before retrying. First-time configuration
+is written fully to a private temporary file and published without overwriting
+an existing name. A filesystem without hard-link support is refused. This protects
+atomic visibility; it does not promise complete recovery after power loss.
+Configuration replacement keeps a complete private backup. See [Privacy](privacy.md).
 
 ## Activate in the host
 
@@ -120,15 +135,30 @@ an existing config in a private, timestamped backup when `--replace` is supplied
 It changes local settings only. Backups may contain private addresses and scope
 details; retain or dispose of them only under the owner's policy.
 
+For noninteractive configuration, use `configure --config -` and provide JSON
+on stdin. With an existing config, add `--replace` only when the setting change
+is authorized. The existing-config check runs before reading stdin or prompting.
+
 The doctor checks local file hashes and setting completeness, with no network
 access. Exit 0 means locally complete settings, 2 means incomplete settings,
 and 1 means invalid input or an integrity/I/O error. It always reports live
 capability as not observed and never certifies readiness to send.
 
+Manifest-managed package files tolerate known OS metadata names (`.DS_Store`,
+`._*`, `Thumbs.db`, `desktop.ini`). These files are filtered during fresh
+installation; local record retention is a separate policy. Symlinks and pycache
+remain refused. This name exception is not a publisher-authenticity check.
+
 Repeated installation without new settings is unchanged if the installed
 bundle matches. Existing different or modified skill folders are refused.
 For an upgrade, export to a separate folder and review the migration rather
 than overwriting an installed skill or copying private settings into a release.
+
+This maintenance release has no automatic `--upgrade` operation. Different parent
+directories can contain the same required folder name. Keep only one active
+copy per host, stop writers before a separately reviewed migration, preserve the
+old tree and compare every private setting/record before switching. Installing a
+new package does not authorize changing an existing live installation.
 An installation lock blocks concurrent installer runs; investigate a leftover
 lock before removing it. Do not start a second install into the same folder.
 
