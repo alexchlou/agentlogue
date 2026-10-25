@@ -1,0 +1,21 @@
+{
+  "config_version": 1,
+  "protocol_version": "AFP v1.3",
+  "language_edition": "en",
+  "owner_name": "",
+  "ledger_email": "",
+  "sending_account": "",
+  "agent_label": "",
+  "role": "preparer",
+  "authorized_matters": [],
+  "material_scope": "",
+  "trusted_approval_channel": "",
+  "registry_location": "",
+  "registry_write_authorized": false,
+  "responsible_filer": "",
+  "content_mode": "minimal_reference",
+  "retention_policy": "",
+  "mail_provider": "gmail",
+  "readback_location": "",
+  "authorized_reader": ""
+}

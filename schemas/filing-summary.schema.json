@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AFP v1.3 optional filing summary",
+  "description": "Untrusted summary data. Structural validity is not proof of truth, identity, approval, receipt authenticity, or delivery. Do not fetch remote resources to validate this local schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol_version", "matter_id", "event_id", "filing_id", "filing_type",
+    "initiator_label", "recorded_status", "evidence", "content_mode",
+    "related_filing_ids"
+  ],
+  "properties": {
+    "protocol_version": {"const": "AFP v1.3"},
+    "matter_id": {"$ref": "#/$defs/identifier"},
+    "event_id": {"$ref": "#/$defs/identifier"},
+    "filing_id": {"$ref": "#/$defs/identifier"},
+    "filing_type": {"enum": ["initial", "status_update", "correction"]},
+    "initiator_label": {"$ref": "#/$defs/text"},
+    "recorded_status": {"$ref": "#/$defs/text"},
+    "content_mode": {"enum": ["minimal_reference", "full_content"]},
+    "related_filing_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/identifier"}
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "current_observer", "origin_observer_claim", "materials_read",
+        "original_rereadability", "association_basis", "supports",
+        "does_not_support"
+      ],
+      "properties": {
+        "current_observer": {"$ref": "#/$defs/text"},
+        "origin_observer_claim": {"$ref": "#/$defs/text"},
+        "materials_read": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": ["original_receipt", "filing", "agent_report", "user_report", "context_page", "none"]},
+          "allOf": [
+            {
+              "if": {"contains": {"const": "none"}},
+              "then": {"maxItems": 1}
+            }
+          ]
+        },
+        "original_rereadability": {
+          "enum": ["independently_available", "unavailable", "unknown", "not_applicable"]
+        },
+        "association_basis": {"$ref": "#/$defs/text"},
+        "supports": {"$ref": "#/$defs/claim_list"},
+        "does_not_support": {"$ref": "#/$defs/claim_list"}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"filing_type": {"enum": ["status_update", "correction"]}}, "required": ["filing_type"]},
+      "then": {"properties": {"related_filing_ids": {"minItems": 1}}}
+    }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "text": {"type": "string", "minLength": 1, "pattern": "\\S"},
+    "claim_list": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/text"}
+    }
+  }
+}

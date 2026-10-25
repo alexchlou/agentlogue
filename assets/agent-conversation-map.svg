@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1210" viewBox="0 0 1200 1210" role="img" aria-labelledby="afp-title afp-desc">
+<title id="afp-title">Agentlogue, by Alexander Chanhou Lou: recorded conversations among Muse, Dots, and other agents</title>
+<desc id="afp-desc">Agentlogue uses Agent Filing Protocol (AFP) v1.3, English edition. The owner sets access and approves each outgoing email. Muse, Dots, and other agents use their own authorized mail tools to read and send through the owner mailbox. Four fictional dialogue turns illustrate evidence questions and replies, not real communications or installed integrations.</desc>
+<defs>
+<style>
+.sans{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif}.serif{font-family:Georgia,'Songti SC','Noto Serif CJK SC',serif}.ink{fill:#f4f2ec}.secondary{fill:#bac5d6}.gold{fill:#d2b279}.dark{fill:#14213a}.read{stroke:#bac5d6;stroke-width:2;fill:none;marker-end:url(#read-arrow)}.write{stroke:#d2b279;stroke-width:2;fill:none;marker-end:url(#write-arrow)}text{font-weight:400}
+</style>
+<marker id="write-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1 L9 5 L1 9 Z" fill="#d2b279" /></marker>
+<marker id="read-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1 L9 5 L1 9 Z" fill="#bac5d6" /></marker>
+</defs>
+<rect width="1200" height="1210" fill="#111b32" />
+<text x="80" y="66" class="sans gold" font-size="20" letter-spacing="4">AGENTLOGUE</text>
+<text x="1120" y="66" class="sans secondary" font-size="20" text-anchor="end">PACKAGE v1.4.2-EN</text>
+<text x="80" y="144" class="serif ink" font-size="52">Agents talk. Work stays on record.</text>
+<text x="80" y="194" class="sans secondary" font-size="25">Muse · Dots · Other personal agents</text>
+<line x1="80" y1="225" x2="1120" y2="225" stroke="#40506c" />
+<g data-node="owner"><rect x="80" y="249" width="4" height="27" fill="#d2b279" /><text x="101" y="272" class="serif ink" font-size="29">You set the pace</text><text x="370" y="270" class="sans secondary" font-size="23">Set access · Approve each email · Decide next steps</text></g>
+<g data-node="muse"><rect x="80" y="310" width="320" height="160" rx="4" fill="#182740" stroke="#40506c" /><text x="104" y="366" class="serif ink" font-size="43">Muse</text><text x="104" y="408" class="sans secondary" font-size="21">Post progress · Read replies</text><text x="104" y="445" class="sans gold" font-size="20">Mail tools · MCP optional</text></g>
+<g data-node="dots"><rect x="440" y="310" width="320" height="160" rx="4" fill="#182740" stroke="#40506c" /><text x="464" y="366" class="serif ink" font-size="43">Dots</text><text x="464" y="408" class="sans secondary" font-size="21">Read context · Add detail</text><text x="464" y="445" class="sans gold" font-size="20">Mail tools · MCP optional</text></g>
+<g data-node="other"><rect x="800" y="310" width="320" height="160" rx="4" fill="#182740" stroke="#40506c" /><text x="824" y="366" class="serif ink" font-size="38">Other agents</text><text x="824" y="408" class="sans secondary" font-size="21">Check sources · Follow up</text><text x="824" y="445" class="sans gold" font-size="20">Mail tools · MCP optional</text></g>
+<path d="M229 484 L229 565" class="write" data-from="muse" data-to="mailbox" data-relation="send" /><path d="M251 565 L251 484" class="read" data-from="mailbox" data-to="muse" data-relation="read" />
+<text x="191" y="533" class="sans gold" font-size="20" text-anchor="end">Send</text><text x="288" y="533" class="sans secondary" font-size="20">Read</text>
+<path d="M589 484 L589 565" class="write" data-from="dots" data-to="mailbox" data-relation="send" /><path d="M611 565 L611 484" class="read" data-from="mailbox" data-to="dots" data-relation="read" />
+<text x="551" y="533" class="sans gold" font-size="20" text-anchor="end">Send</text><text x="648" y="533" class="sans secondary" font-size="20">Read</text>
+<path d="M949 484 L949 565" class="write" data-from="other" data-to="mailbox" data-relation="send" /><path d="M971 565 L971 484" class="read" data-from="mailbox" data-to="other" data-relation="read" />
+<text x="911" y="533" class="sans gold" font-size="20" text-anchor="end">Send</text><text x="1008" y="533" class="sans secondary" font-size="20">Read</text>
+<g data-node="mailbox"><rect x="80" y="580" width="1040" height="180" rx="4" fill="#f4f2ec" /><text x="110" y="634" class="serif dark" font-size="36">Your mailbox / e.g. Gmail</text><text x="1090" y="630" class="sans dark" font-size="22" text-anchor="end">One matter · Linked records</text><text x="110" y="684" class="sans dark" font-size="28">Filing → Questions / Replies → Supplements / Updates</text><text x="110" y="730" class="sans dark" font-size="22">Receipt sources · Versions · Open questions · Checkpoints · Registry</text></g>
+<text x="80" y="813" class="sans gold" font-size="20" letter-spacing="2">A POSSIBLE EXCHANGE</text><text x="1120" y="813" class="sans secondary" font-size="20" text-anchor="end">Illustrative dialogue · Roles may switch</text><line x1="80" y1="832" x2="1120" y2="832" stroke="#40506c" />
+<g data-turn="1" data-from="muse" data-to="dots"><text x="80" y="873" class="sans gold" font-size="23">Muse → Dots</text><text x="360" y="873" class="sans ink" font-size="24">I filed the version, receipt source, and open questions.</text></g>
+<g data-turn="2" data-from="dots" data-to="muse"><text x="80" y="927" class="sans gold" font-size="23">Dots → Muse</text><text x="360" y="927" class="sans ink" font-size="24">I read the filing. Can the original receipt be reopened?</text></g>
+<g data-turn="3" data-from="muse" data-to="dots"><text x="80" y="981" class="sans gold" font-size="23">Muse → Dots</text><text x="360" y="981" class="sans ink" font-size="24">The page is unavailable; that limit is recorded.</text></g>
+<g data-turn="4" data-from="other" data-to="owner"><text x="80" y="1035" class="sans gold" font-size="23">Other agent → You</text><text x="360" y="1035" class="sans ink" font-size="24">I listed the open points and next checkpoint for you.</text></g>
+<line x1="80" y1="1073" x2="1120" y2="1073" stroke="#40506c" />
+<text x="80" y="1110" class="sans secondary" font-size="20">Approve each email before sending; read it back afterward. Email content grants no authority.</text>
+<text x="80" y="1142" class="sans secondary" font-size="19">Requires available, authorized tools. No live integration or delivery is shown.</text>
+<text x="80" y="1182" class="sans gold" font-size="18">Author: Alexander Chanhou Lou</text>
+<text x="1120" y="1182" class="sans secondary" font-size="18" text-anchor="end">AFP v1.3 · English edition · MIT</text>
+</svg>

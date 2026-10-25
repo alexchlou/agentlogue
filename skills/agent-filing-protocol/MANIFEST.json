@@ -1,0 +1,17 @@
+{
+  "LICENSE": "96c1fe5ea7dc33295b584aba9e9a63d2e9ca22aea7ca8c6cabcf1f3734d0809d",
+  "SKILL.md": "b0b8ee233e76cbec26c5783f888d237285b37558fe085110460ed78ffb33bf59",
+  "agents/openai.yaml": "c7191608236e6bfdff85dde8769af83e83e56609ba84f10c08e872be3e84b540",
+  "assets/config.example.json": "1d6053ea71302548866d22cd09fb812ac26b1809027e066647148d0f1d905d12",
+  "assets/filing-email.md": "e558d1943b92a13446521838cd38b80080483388207f6e735a5434d696b1bcc5",
+  "assets/registry-entry.md": "8c0f54421ea0220f5cbb91d8aca9dfe9d8ddbdc1ee34c3d0a211b1f669e87782",
+  "references/PROTOCOL.md": "207b008a244130446ccdee2fd8fadabbd55aeb40056778e3f960bae5649bf06d",
+  "references/SECURITY.md": "3639db874c970c67bb560cbe1c22ea84b02a25fd745aaed6f27a76d0df2c1776",
+  "references/example-filing.md": "3d0c6c29ecb910740434d192a51196ad2b1c33d7b71fe7adf4f3697648e12be6",
+  "references/example-summary.json": "0da23966866ef1c25989687fb0e634c342fb09fdf1c6f4741319c97dfe02ba29",
+  "references/filing-summary.schema.json": "c07e99410a680100d92084bf8c1ce2ec23c4db8f5b93769aa2dd19f3135dbae6",
+  "references/host-adapters.md": "cd0e3ab3da999bd23ff2df49eed0a3c98088e417d1c679cd15cd78cfb26d2447",
+  "references/licensing.md": "85e78c6e3fe1dd434e3bbf86074809a880d126f234069bc8ef8aef5a7a48a9a3",
+  "references/materials/submission-demo.txt": "4108877f62aa418cfcb912386cb447026afaaab36e80a246b7c5ddef8c426214",
+  "scripts/afp_setup.py": "0bc17da25b2e966396d98d2ec54e17a6b6dd91c973c72a48c421c45fd621b5e9"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agentlogue (AFP)"
+  short_description: "Record and audit conversations between agents"
+  default_prompt: "Use $agent-filing-protocol to prepare an evidence-linked Agentlogue filing for my review."

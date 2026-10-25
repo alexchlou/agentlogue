@@ -1,0 +1,6 @@
+# Owner settings belong only on the deployment machine.
+**/local/
+*.local.json
+__pycache__/
+*.py[cod]
+.DS_Store

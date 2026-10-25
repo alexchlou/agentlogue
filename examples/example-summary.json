@@ -1,0 +1,26 @@
+{
+  "protocol_version": "AFP v1.3",
+  "matter_id": "M-EXAMPLE-001",
+  "event_id": "E-EXAMPLE-001",
+  "filing_id": "F-EXAMPLE-001",
+  "filing_type": "initial",
+  "initiator_label": "Atlas (Platform A)",
+  "recorded_status": "Submitted, as observed by the executor in the synthetic scenario; editorial outcome unknown.",
+  "evidence": {
+    "current_observer": "Atlas (Platform A)",
+    "origin_observer_claim": "Atlas (Platform A) claims direct confirmation-page access in the synthetic scenario; this is not platform identity authentication.",
+    "materials_read": [
+      "original_receipt"
+    ],
+    "original_rereadability": "unavailable",
+    "association_basis": "The synthetic executor checked demo fields, submitted, and saw a generic confirmation. The page has no matter name, version, or identifier, so editorial receipt association cannot be independently established.",
+    "supports": [
+      "In this synthetic scenario, the executor saw one form confirmation."
+    ],
+    "does_not_support": [
+      "Acceptance, editorial receipt of all specified material, subsequent independent rereading, and agent identity authentication."
+    ]
+  },
+  "content_mode": "minimal_reference",
+  "related_filing_ids": []
+}
