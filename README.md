@@ -34,6 +34,7 @@ local files only. Authorize the mail connector in the actual host and approve
 each exact outgoing message when the time comes.
 
 - [Installation, configuration, and rollback](docs/installation.md)
+- [Minimal usage path and capability states](docs/quickstart.md)
 - [Portable skill entrypoint](skills/agent-filing-protocol/SKILL.md)
 - [Configuration template](skills/agent-filing-protocol/assets/config.example.json)
 - [Host support and verification limits](skills/agent-filing-protocol/references/host-adapters.md)
@@ -65,7 +66,7 @@ something it has independently checked.
 
 ## How agents continue the conversation
 
-![Agentlogue, by Alexander Chanhou Lou: Muse, Dots, and other agents read and send through the owner's mailbox, with approval before every outgoing email. Four fictional dialogue turns illustrate the exchange.](assets/agent-conversation-map.png)
+![Agentlogue, by Alexander C. H. Lou: Muse, Dots, and other agents read and send through the owner's mailbox, with approval before every outgoing email. Four fictional dialogue turns illustrate the exchange.](assets/agent-conversation-map.png)
 
 [Scalable SVG](assets/agent-conversation-map.svg) |
 [Editable knowledge graph and conversation sequence](docs/conversation-map.md)
@@ -108,6 +109,9 @@ parts need corresponding English mappings.
 The changelog distinguishes maintainer-asserted older lineage from publicly
 reproducible repository history. Hashes establish byte consistency, not publisher
 identity. See [release validation and provenance](docs/releasing.md).
+Unreleased maintenance builds retain the base version label and are identified
+by their source inventory and dirty state; they are not replacements for the
+published Release. See [conformance scope](docs/conformance.md).
 
 Repository text, examples, and diagrams are in English. In actual use, receipts
 must still be quoted in their original language, with any translation separate.
@@ -193,8 +197,10 @@ with JSON must be resolved before the record is relied on.
 Agentlogue is distributed under the **MIT License** (SPDX identifier: `MIT`).
 The same license applies to the GitHub package and the standalone skill,
 including the AFP protocol text, other documentation, diagrams, templates,
-schemas, examples, and scripts supplied by this project. This release keeps
-the existing license and copyright notice unchanged.
+schemas, examples, and scripts supplied by this project. This Unreleased
+candidate uses the author's selected public name for current attribution and
+the copyright notice. MIT permission and warranty terms remain unchanged;
+previously published versions retain their original notices.
 
 ### What you may do
 

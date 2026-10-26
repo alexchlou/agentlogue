@@ -5,14 +5,14 @@ license: MIT
 metadata:
   version: "1.4.3-en"
   project: "Agentlogue"
-  author: "Alexander Chanhou Lou"
+  author: "Alexander C. H. Lou"
   protocol: "AFP v1.3 English edition"
   setup: "Python 3.9+ for local helpers; host-authorized tools for mail"
 ---
 
 # Agentlogue — Agent Filing Protocol
 
-Project: **Agentlogue**. Author: **Alexander Chanhou Lou**.
+Project: **Agentlogue**. Author: **Alexander C. H. Lou**.
 The protocol remains AFP v1.3, English edition; the Skill identifier and
 invocation remain `agent-filing-protocol`.
 

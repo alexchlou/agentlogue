@@ -1,6 +1,6 @@
 {
-  "LICENSE": "96c1fe5ea7dc33295b584aba9e9a63d2e9ca22aea7ca8c6cabcf1f3734d0809d",
-  "SKILL.md": "d03808a76f164a3ef83a40ff84cbd3efa45c18f43c4f71de9eafdef37dadccdd",
+  "LICENSE": "25d9db353237352b798d19682c207c21293620af1869e0301e89fc49d003cf46",
+  "SKILL.md": "ac5ee4953bc8884a37f00c23ef26b7742973b70289ccf16caebd778972431600",
   "agents/openai.yaml": "c7191608236e6bfdff85dde8769af83e83e56609ba84f10c08e872be3e84b540",
   "assets/config.example.json": "1d6053ea71302548866d22cd09fb812ac26b1809027e066647148d0f1d905d12",
   "assets/filing-email.md": "0ddb293c940b45f084b455968304547fdb76714918c957a9e878bf00c0949a29",
@@ -11,7 +11,7 @@
   "references/example-summary.json": "0da23966866ef1c25989687fb0e634c342fb09fdf1c6f4741319c97dfe02ba29",
   "references/filing-summary.schema.json": "c07e99410a680100d92084bf8c1ce2ec23c4db8f5b93769aa2dd19f3135dbae6",
   "references/host-adapters.md": "cd0e3ab3da999bd23ff2df49eed0a3c98088e417d1c679cd15cd78cfb26d2447",
-  "references/licensing.md": "5d02d4a77bf93108332bfc3bde2576d94cf9cbf4d7bee60f893ec479621d9443",
+  "references/licensing.md": "b7c731566cc77c01c2d7ef3f3e21055166516a8c75cbddda1eb50428aaa6f23b",
   "references/materials/submission-demo.txt": "4108877f62aa418cfcb912386cb447026afaaab36e80a246b7c5ddef8c426214",
   "references/privacy.md": "728e1892900afeea45799b2a391d6529724cede6240fd5c1048c06a948eb0a61",
   "scripts/afp_setup.py": "517b00e699bfaad3d66646b9cbc278a454299f6e7b3c0dd1642dd73f26ae3511"

@@ -1,5 +1,24 @@
 # Changelog
 
+## Unreleased
+
+- Use **Alexander C. H. Lou** as the owner's selected current author and
+  copyright attribution across documentation, metadata, the portable Skill
+  and diagrams. Keep the MIT permission/warranty text, AFP v1.3, Schema and
+  Skill identifier unchanged. Earlier entries and published releases retain
+  the attribution used at publication.
+- Add structured test outcomes, source/CI provenance and candidate-only evidence.
+  Distinguish skipped tests, missing Git provenance and PR head/checkout identity.
+- Prepare allowlisted CI evidence and validated candidate archive uploads using
+  a verified Action commit; inherit existing repository retention by default.
+  Remote execution and actual uploads require their own observed results.
+- Check reachable Git metadata and Unicode/JSON-escaped email candidates without
+  publishing raw values. These checks do not establish historical erasure.
+- Add 26 layered acceptance plans and 12 paired synthetic trace controls. These
+  test an offline checker, not a real Agent, trusted sender or native integration.
+- Consolidate usage guidance and document deferred evidence/hold/approval designs
+  and deployment acceptance. Do not introduce a mail service or migrate installs.
+
 ## v1.4.3-en - 2026-10-26
 
 - Preserve LF text bytes on Git checkouts, including Windows, so automatic

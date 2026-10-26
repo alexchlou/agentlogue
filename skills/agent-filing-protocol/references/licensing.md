@@ -1,13 +1,15 @@
 # MIT licensing notes
 
-Project: **Agentlogue**. Author: **Alexander Chanhou Lou**.
+Project: **Agentlogue**. Author: **Alexander C. H. Lou**.
 Package: **v1.4.3-en**. Protocol: **AFP v1.3, English edition**.
 
 Agentlogue is distributed under the **MIT License** (SPDX identifier: `MIT`).
 The same license applies to the GitHub package and the standalone skill,
 including the AFP protocol text, other documentation, diagrams, templates,
-schemas, examples, and scripts supplied by this project. This release keeps
-the existing license and copyright notice unchanged.
+schemas, examples, and scripts supplied by this project. This Unreleased
+candidate uses the author's selected public name for current attribution and
+the copyright notice. MIT permission and warranty terms remain unchanged;
+previously published versions retain their original notices.
 
 ### What you may do
 
@@ -24,7 +26,7 @@ redistributed or modified package is a straightforward way to preserve them.
 The retained copyright notice is:
 
 ```text
-Copyright (c) 2026 Alexander Chanhou Lou
+Copyright (c) 2026 Alexander C. H. Lou
 ```
 
 ### Warranty and operational permissions

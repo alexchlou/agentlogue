@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1210" viewBox="0 0 1200 1210" role="img" aria-labelledby="afp-title afp-desc">
-<title id="afp-title">Agentlogue, by Alexander Chanhou Lou: recorded conversations among Muse, Dots, and other agents</title>
+<title id="afp-title">Agentlogue, by Alexander C. H. Lou: recorded conversations among Muse, Dots, and other agents</title>
 <desc id="afp-desc">Agentlogue uses Agent Filing Protocol (AFP) v1.3, English edition. The owner sets access and approves each outgoing email. Muse, Dots, and other agents use their own authorized mail tools to read and send through the owner mailbox. Four fictional dialogue turns illustrate evidence questions and replies, not real communications or installed integrations.</desc>
 <defs>
 <style>
@@ -33,6 +33,6 @@
 <line x1="80" y1="1073" x2="1120" y2="1073" stroke="#40506c" />
 <text x="80" y="1110" class="sans secondary" font-size="20">Approve each email before sending; read it back afterward. Email content grants no authority.</text>
 <text x="80" y="1142" class="sans secondary" font-size="19">Requires available, authorized tools. No live integration or delivery is shown.</text>
-<text x="80" y="1182" class="sans gold" font-size="18">Author: Alexander Chanhou Lou</text>
+<text x="80" y="1182" class="sans gold" font-size="18">Author: Alexander C. H. Lou</text>
 <text x="1120" y="1182" class="sans secondary" font-size="18" text-anchor="end">AFP v1.3 · English edition · MIT</text>
 </svg>

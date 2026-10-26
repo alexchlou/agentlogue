@@ -23,12 +23,14 @@ sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from sync_skill import synchronize
+from privacy_checks import check_text as privacy_text, check_git_metadata, collect_git_metadata
+from release_evidence import (ci_export, failure_export, provenance, tool_versions, utc_now)
+from conformance import check_corpus
 
 PUBLIC_ROOT = {".gitattributes", ".gitignore", "README.md", "CHANGELOG.md", "LICENSE", "PROTOCOL.md", "SECURITY.md",
                "install.py", "install.command", "release.json", "requirements-checks.txt"}
 PUBLIC_DIRS = {".github", "assets", "docs", "examples", "schemas", "skills", "scripts", "templates", "tests"}
 BLOCKED_PARTS = {"local", ".git", ".hg", ".svn", "__pycache__", "__MACOSX", ".venv", "node_modules", "backups", ".pytest_cache"}
-EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 
 
 def sha(data):
@@ -83,13 +85,7 @@ def inspect_png(data):
 
 
 def check_text(text, relative):
-    for email in EMAIL.findall(text):
-        if not (email.lower().endswith(".invalid") or email.lower().endswith("@users.noreply.github.com")):
-            raise ValueError("Non-synthetic email candidate in " + relative)
-    patterns = [r"/Users/[A-Za-z0-9._-]+/", r"[A-Z]:\\Users\\[A-Za-z0-9._-]+\\",
-                r"AFPTEST-[A-Za-z0-9-]+", r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"]
-    if any(re.search(pattern, text) for pattern in patterns):
-        raise ValueError("Private-data candidate in " + relative)
+    privacy_text(text, relative)
 
 
 def release_metadata(root):
@@ -97,7 +93,7 @@ def release_metadata(root):
     if not isinstance(release, dict) or not isinstance(release.get("version"), str) or not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+-en", release["version"]):
         raise ValueError("Invalid package version; path separators are not permitted")
     if (release.get("project"), release.get("author"), release.get("skill_id"), release.get("license")) != (
-            "Agentlogue", "Alexander Chanhou Lou", "agent-filing-protocol", "MIT"):
+            "Agentlogue", "Alexander C. H. Lou", "agent-filing-protocol", "MIT"):
         raise ValueError("Project identity or license metadata changed")
     return release
 
@@ -122,6 +118,10 @@ def check_source(root):
             raise ValueError("Package-version marker missing: " + file)
     if (root / "LICENSE").read_bytes() != (root / "skills/agent-filing-protocol/LICENSE").read_bytes():
         raise ValueError("License copies differ")
+    notice = next(line for line in (root / "LICENSE").read_text().splitlines() if line.startswith("Copyright "))
+    quoted = re.search(r'The retained copyright notice is:\s*```text\n([^\n]+)\n```', (root / "README.md").read_text())
+    if not quoted or quoted.group(1) != notice:
+        raise ValueError("README retained copyright quotation differs from LICENSE")
     config = json.loads((root / "skills/agent-filing-protocol/assets/config.example.json").read_text())
     fixed = {"config_version": 1, "protocol_version": "AFP v1.3", "language_edition": "en",
              "role": "preparer", "content_mode": "minimal_reference", "mail_provider": "gmail"}
@@ -255,10 +255,10 @@ def build_archives(root, output, inventory):
         checksum = sha(path.read_bytes())
         checksums.append(checksum + "  " + path.name)
         archives.append({"file": path.name, "sha256": checksum, "files": len(chosen), "bytes": path.stat().st_size})
-    with (output / "SHA256SUMS.txt").open("x") as stream:
-        stream.write("\n".join(checksums) + "\n")
-    with (output / "SOURCE-MANIFEST.json").open("x") as stream:
-        stream.write(json.dumps(inventory, indent=2) + "\n")
+    with (output / "SHA256SUMS.txt").open("xb") as stream:
+        stream.write(("\n".join(checksums) + "\n").encode("utf-8"))
+    with (output / "SOURCE-MANIFEST.json").open("xb") as stream:
+        stream.write((json.dumps(inventory, indent=2) + "\n").encode("utf-8"))
     return archives
 
 
@@ -267,35 +267,65 @@ def main():
     parser.add_argument("--gitleaks", type=Path, required=True, help="Verified Gitleaks 8.30.1 executable")
     parser.add_argument("--output", type=Path, required=True, help="New validation evidence directory outside source")
     parser.add_argument("--artifacts", type=Path, help="New archive directory outside source")
+    parser.add_argument("--ci-export", type=Path, help="New allowlisted public CI evidence directory outside source")
     args = parser.parse_args()
+    stage = "setup"
+    started = utc_now()
     try:
-        if ROOT.resolve() == args.output.resolve() or ROOT.resolve() in args.output.resolve().parents:
-            raise ValueError("Evidence output must be outside source")
-        if args.artifacts and (ROOT.resolve() == args.artifacts.resolve() or ROOT.resolve() in args.artifacts.resolve().parents):
-            raise ValueError("Artifact output must be outside source")
+        for path in (args.output, args.artifacts, args.ci_export):
+            if path and (ROOT.resolve() == path.resolve() or ROOT.resolve() in path.resolve().parents):
+                raise ValueError("Validation outputs must be outside source")
+        if args.ci_export and (args.ci_export.exists() or args.ci_export.is_symlink()):
+            raise ValueError("CI export destination must be new")
         args.output.mkdir(parents=True, exist_ok=False)
+        stage = "source"
         source, corpus = check_source(ROOT)
-        tests = subprocess.run([sys.executable, "-I", "-B", "-m", "unittest", "discover", "-s", "tests", "-v"],
+        identity = provenance(ROOT)
+        stage = "tests"
+        tests = subprocess.run([sys.executable, "-I", "-B", str(ROOT / "scripts/run_tests.py"),
+                                "--output", str(args.output / "tests-result.json"), "--log", str(args.output / "tests.log")],
                                cwd=ROOT, capture_output=True, text=True, timeout=55)
-        (args.output / "tests.log").write_text(tests.stdout + tests.stderr)
         if tests.returncode:
             raise ValueError("Regression tests failed; see tests.log")
+        test_result = json.loads((args.output / "tests-result.json").read_text())
+        stage = "schema"
         schemas = schema_checks(ROOT)
+        stage = "privacy"
+        metadata = check_git_metadata(ROOT)
+        git_text = collect_git_metadata(ROOT)
+        if git_text is not None:
+            corpus += "\n\n# REACHABLE LOCAL GIT METADATA\n" + git_text
         scans = scan_corpus(args.gitleaks, ROOT, corpus, args.output)
+        scans["reachable_git_metadata_included"] = git_text is not None
+        stage = "conformance"
+        conformance = check_corpus(json.loads((ROOT / "examples/conformance/cases.json").read_text()))
         after, _ = check_source(ROOT)
         if after["inventory"] != source["inventory"]:
             raise ValueError("Source changed while checks ran")
+        stage = "archives"
         archives = build_archives(ROOT, args.artifacts, source["inventory"]) if args.artifacts else []
-        report = {**source, "schema": schemas, "secrets": scans, "tests_passed": True,
-                  "tests_result": [line for line in tests.stderr.splitlines() if line.startswith("Ran ")],
-                  "archives": archives, "python": sys.version, "zlib": zlib.ZLIB_VERSION,
+        report = {**source, "status": "passed", "schema": schemas, "secrets": scans, "tests": test_result,
+                  "checks": {"source": "passed", "tests": "passed", "schema": "passed", "privacy": "passed",
+                             "git_metadata": metadata["status"], "conformance": "passed",
+                             "archives": "passed" if args.artifacts else "not_run"},
+                  "conformance": conformance, "provenance": identity, "tools": tool_versions(),
+                  "started_at_utc": started, "completed_at_utc": utc_now(), "candidate_only": True,
+                  "archives": archives, "python": sys.version.split()[0], "zlib": zlib.ZLIB_VERSION,
                   "limits": "Local synthetic checks; no live mail, native-host, publisher-identity or legal-compliance certification"}
         (args.output / "VALIDATION-REPORT.json").write_text(json.dumps(report, indent=2) + "\n")
+        stage = "report_export"
+        if args.ci_export:
+            ci_export(report, args.artifacts, args.ci_export)
         print(json.dumps({"version": source["release"]["version"], "source_files": len(source["inventory"]),
-                          "manifest_files": source["manifest_files"], "tests": report["tests_result"], "secret_findings": 0,
+                          "manifest_files": source["manifest_files"], "tests": test_result["counts"], "secret_findings": 0,
                           "archives": archives}, indent=2))
-    except (OSError, ValueError, ImportError, subprocess.SubprocessError) as exc:
-        print("Release validation failed: " + str(exc), file=sys.stderr)
+    except (OSError, ValueError, ImportError, subprocess.SubprocessError):
+        if args.ci_export and ROOT.resolve() not in args.ci_export.resolve().parents and args.ci_export.resolve() != ROOT.resolve():
+            try:
+                failure_export(args.ci_export, stage)
+            except OSError:
+                pass
+        print("Release validation failed at stage: " + stage + "; candidate validation is incomplete.", file=sys.stderr)
         return 1
     return 0
 
