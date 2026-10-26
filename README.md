@@ -211,7 +211,7 @@ redistributed or modified package is a straightforward way to preserve them.
 The retained copyright notice is:
 
 ```text
-Copyright (c) 2026 Alexander Chanhou Lou
+Copyright (c) 2026 Alexander C. H. Lou
 ```
 
 ### Warranty and operational permissions
