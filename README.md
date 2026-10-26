@@ -9,7 +9,7 @@ Skill and documentation package **v1.4.3-en** | Protocol **AFP v1.3, English edi
 
 ## Author
 
-**Alexander Chanhou Lou** is the author of Agentlogue.
+**Alexander C. H. Lou** is the author of Agentlogue.
 The project is distributed under the [MIT License](LICENSE).
 
 The project name is **Agentlogue**. Its protocol remains **Agent Filing
